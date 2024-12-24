@@ -19,8 +19,7 @@
         .chat-container {
             width: 100%;
             max-width: 800px;
-            height: 100%;
-            max-height: 90vh;
+            height: 90vh;
             background-color: #ffffff;
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -33,11 +32,21 @@
             background-color: #00a67e;
             padding: 20px;
             color: white;
-            text-align: center;
-            font-weight: bold;
-            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
+        }
+
+        .chat-header img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 24px;
         }
 
         .chat-box {
@@ -56,18 +65,28 @@
             max-width: 75%;
             line-height: 1.5;
             font-size: 15px;
+            display: flex;
+            align-items: center;
         }
 
         .message.user-message {
             align-self: flex-end;
             background-color: #007bff;
             color: white;
+            flex-direction: row-reverse;
         }
 
         .message.bot-message {
             align-self: flex-start;
             background-color: #f6f6f7;
             color: black;
+        }
+
+        .message img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
         }
 
         .input-container {
@@ -127,7 +146,8 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            TYLOR AI
+            <img src="https://img.icons8.com/ios-glyphs/90/ffffff/chat.png" alt="Logo">
+            <h1>TYLOR AI</h1>
         </div>
         <div class="chat-box" id="chat-box"></div>
         <div class="input-container" id="user-input-container">
@@ -158,6 +178,14 @@
             messageElement.classList.add('message');
             messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
             messageElement.textContent = message;
+
+            // Add avatar images
+            if (sender === 'user') {
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/007bff/user.png" alt="User">${message}`;
+            } else {
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${message}`;
+            }
+
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
