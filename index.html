@@ -14,46 +14,48 @@
             height: 100vh;
             margin: 0;
             padding: 0;
+            background: url('https://i.ibb.co/bFWtkv0/1734465645315.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
 
         .chat-container {
             width: 100%;
             max-width: 800px;
             height: 90vh;
-            background-color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.8);
             border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         .chat-header {
-            background-color: #00a67e;
-            padding: 20px;
+            background-color: #333;
+            padding: 10px;
             color: white;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
 
         .chat-header img {
-            height: 40px;
+            height: 30px;
             margin-right: 10px;
         }
 
         .chat-header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 20px;
         }
 
         .chat-box {
             flex-grow: 1;
             overflow-y: auto;
             padding: 20px;
-            background-color: #f0f0f5;
+            background-color: #1c1c1c;
             display: flex;
             flex-direction: column;
         }
@@ -78,8 +80,8 @@
 
         .message.bot-message {
             align-self: flex-start;
-            background-color: #f6f6f7;
-            color: black;
+            background-color: #333;
+            color: white;
         }
 
         .message img {
@@ -92,8 +94,8 @@
         .input-container {
             display: flex;
             padding: 15px;
-            background-color: white;
-            border-top: 1px solid #e0e0e0;
+            background-color: #333;
+            border-top: 1px solid #444;
         }
 
         #user-input {
@@ -101,10 +103,11 @@
             border: none;
             padding: 12px;
             border-radius: 20px;
-            background-color: #f1f3f4;
+            background-color: #444;
             font-size: 14px;
+            color: white;
             resize: none;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         #user-input:focus {
@@ -112,7 +115,7 @@
         }
 
         #send-btn {
-            background-color: #00a67e;
+            background-color: #007bff;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -126,7 +129,7 @@
         }
 
         #send-btn:hover {
-            background-color: #007b5f;
+            background-color: #0056b3;
         }
 
         #send-btn svg {
@@ -138,7 +141,7 @@
         }
 
         .chat-box::-webkit-scrollbar-thumb {
-            background-color: #ccc;
+            background-color: #555;
             border-radius: 10px;
         }
     </style>
@@ -181,9 +184,9 @@
 
             // Add avatar images
             if (sender === 'user') {
-                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/007bff/user.png" alt="User">${message}`;
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">${message}`;
             } else {
-                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${message}`;
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/chat.png" alt="Bot">${message}`;
             }
 
             chatBox.appendChild(messageElement);
