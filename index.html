@@ -73,7 +73,7 @@
 
         .message.user-message {
             align-self: flex-end;
-            background-color: #007bff;
+            background-color: 00a67e;
             color: white;
             flex-direction: row-reverse;
         }
@@ -155,7 +155,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <img src="https://img.icons8.com/ios-glyphs/90/ffffff/chat.png" alt="Logo">
+            <img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Logo">
             <h1>TYLOR AI</h1>
         </div>
         <div class="chat-box" id="chat-box"></div>
@@ -192,7 +192,7 @@
             if (sender === 'user') {
                 messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">${message}`;
             } else {
-                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/chat.png" alt="Bot">${message}`;
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${message}`;
             }
 
             chatBox.appendChild(messageElement);
@@ -201,7 +201,7 @@
 
         async function fetchAIResponse(message) {
             try {
-                const prompts = "Tylor is a friendly and helpful chatbot. He answers questions in a simple and clear manner.";
+                const prompts = "Tylor-AI is a friendly and helpful chatbot developed by Tylor. He answers questions in a simple, clear manner, and direct manner without asking questions like how can I assist you today.";
                 const response = await fetch(`https://btch.us.kg/prompt/gpt?prompt=${encodeURIComponent(prompts)}&text=${encodeURIComponent(message)}`);
                 const data = await response.json();
                 
