@@ -22,7 +22,7 @@
             width: 100%;
             max-width: 800px;
             height: 90vh;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             display: flex;
@@ -31,7 +31,7 @@
         }
 
         .chat-header {
-            background-color: #333;
+            background-color: rgba(51, 51, 51, 0.7);
             padding: 10px;
             color: white;
             display: flex;
@@ -55,7 +55,7 @@
             flex-grow: 1;
             overflow-y: auto;
             padding: 20px;
-            background-color: #1c1c1c;
+            background-color: transparent;
             display: flex;
             flex-direction: column;
         }
@@ -80,7 +80,7 @@
 
         .message.bot-message {
             align-self: flex-start;
-            background-color: #333;
+            background-color: rgba(51, 51, 51, 0.7);
             color: white;
         }
 
@@ -94,7 +94,7 @@
         .input-container {
             display: flex;
             padding: 15px;
-            background-color: #333;
+            background-color: rgba(51, 51, 51, 0.7);
             border-top: 1px solid #444;
         }
 
@@ -103,7 +103,7 @@
             border: none;
             padding: 12px;
             border-radius: 20px;
-            background-color: #444;
+            background-color: rgba(68, 68, 68, 0.7);
             font-size: 14px;
             color: white;
             resize: none;
@@ -186,7 +186,7 @@
             if (sender === 'user') {
                 messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">${message}`;
             } else {
-                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/chat.png" alt="Bot">${message}`;
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/chat.png" alt="Bot">${message}`;
             }
 
             chatBox.appendChild(messageElement);
