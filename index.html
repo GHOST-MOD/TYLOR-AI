@@ -21,7 +21,7 @@
         .chat-container {
             width: 100%;
             max-width: 800px;
-            height: 90vh;
+            height: 100vh;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -96,10 +96,11 @@
             padding: 15px;
             background-color: rgba(51, 51, 51, 0.7);
             border-top: 1px solid #444;
+            align-items: center;
         }
 
         #user-input {
-            flex-grow: 1;
+            width: 80%;
             border: none;
             padding: 12px;
             border-radius: 20px;
@@ -108,17 +109,19 @@
             color: white;
             resize: none;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: width 0.3s ease;
         }
 
         #user-input:focus {
             outline: none;
+            width: 90%;
         }
 
         #send-btn {
-            background-color: #007bff;
+            background-color: #00a67e;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px;
             cursor: pointer;
             border-radius: 50%;
             display: flex;
@@ -126,14 +129,17 @@
             justify-content: center;
             margin-left: 10px;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
 
         #send-btn:hover {
-            background-color: #0056b3;
+            background-color: #007b5f;
         }
 
         #send-btn svg {
             fill: white;
+            width: 24px;
+            height: 24px;
         }
 
         .chat-box::-webkit-scrollbar {
@@ -156,7 +162,7 @@
         <div class="input-container" id="user-input-container">
             <textarea id="user-input" placeholder="Ask a question..." rows="1"></textarea>
             <button id="send-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
                 </svg>
             </button>
@@ -186,7 +192,7 @@
             if (sender === 'user') {
                 messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">${message}`;
             } else {
-                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/chat.png" alt="Bot">${message}`;
+                messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/chat.png" alt="Bot">${message}`;
             }
 
             chatBox.appendChild(messageElement);
