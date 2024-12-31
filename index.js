@@ -33,8 +33,8 @@ function appendMessage(sender, message) {
     `;
 
     let messageContent1 = `
-        <div>${timestamp}</div>
-        <small style="margin-left: 10px; color: #ccc;">${message}</small>
+        <small style="margin-left: 10px; color: #ccc;">${timestamp}</small>
+        <div>${message}</div>
     `;
 
     // Format with avatar
