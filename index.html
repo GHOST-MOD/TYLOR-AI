@@ -226,7 +226,7 @@
         }
     </style>
     <script>
-async function signUp(event) {
+        async function signUp(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -263,6 +263,11 @@ async function signUp(event) {
                 document.querySelector('.chat-container').style.display = 'flex';
             }
         }
+function startChat() {
+            document.getElementById('start-chat-btn').style.display = 'none';
+            document.getElementById('user-input-container').style.display = 'flex';
+            document.getElementById('user-input').focus();
+        }
     </script>
 </head>
 <body>
@@ -282,7 +287,7 @@ async function signUp(event) {
             <h1>TYLOR AI</h1>
         </div>
         <div class="chat-box" id="chat-box"></div>
-        <div class="start-chat-btn" id="start-chat-btn">Tap to start chatting</div>
+        <div class="start-chat-btn" id="start-chat-btn" onclick="startChat()">Tap to start chatting</div>
         <div class="input-container" id="user-input-container">
             <textarea id="user-input" placeholder="Ask a question..." rows="1"></textarea>
             <button id="send-btn">
@@ -294,3 +299,4 @@ async function signUp(event) {
     </div>
 </body>
 </html>
+    
