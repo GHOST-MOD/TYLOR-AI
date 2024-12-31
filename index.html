@@ -82,6 +82,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            display: none;
         }
 
         .chat-header {
@@ -225,63 +226,4 @@
         }
     </style>
     <script>
-        async function signUp(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const response = await fetch('/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await response.json();
-            alert(data.message);
-        }
-
-        async function signIn(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const response = await fetch('/signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await response.json();
-            alert(data.message);
-        }
-    </script>
-</head>
-<body>
-    <div id="auth-container">
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <div style="display: flex; justify-content: space-between; width: 100%;">
-            <button id="sign-in-btn" onclick="signIn(event)">Sign In</button>
-            <button id="sign-up-btn" onclick="signUp(event)">Sign Up</button>
-        </div>
-        <div class="loader" id="loader"></div>
-        <div class="error-message" id="error-message"></div>
-    </div>
-    <div class="chat-container" style="display:none;">
-        <div class="chat-header">
-            <img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Logo">
-            <h1>TYLOR AI</h1>
-        </div>
-        <div class="chat-box" id="chat-box"></div>
-        <div class="start-chat-btn" id="start-chat-btn">Tap to start chatting</div>
-        <div class="input-container" id="user-input-container">
-            <textarea id="user-input" placeholder="Ask a question..." rows="1"></textarea>
-            <button id="send-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
-                </svg>
-            </button>
-        </div>
-    </div>
-</body>
-</html>
+        
