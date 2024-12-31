@@ -65,6 +65,22 @@ server.post('/signin', async (req, res) => {
     }
 });
 
+// Route to handle message sending
+server.post('/send-message', async (req, res) => {
+    const { uid, message } = req.body;
+    try {
+        await addDoc(collection(db, 'messages'), {
+            uid: uid,
+            message: message,
+            sender: 'user', // Or dynamically set the sender
+            timestamp: serverTimestamp()
+        });
+        res.status(200).json({ message: 'Message sent successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error sending message', error: error.message });
+    }
+});
+
 // Start the Express server
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
