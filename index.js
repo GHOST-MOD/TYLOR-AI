@@ -1,3 +1,4 @@
+const express = require('express');
 const { initializeApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
 const { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } = require('firebase/firestore');
@@ -17,6 +18,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Create an Express application
+const server = express();
+const PORT = process.env.PORT || 3000;
+
+server.get('/', (req, res) => {
+    res.send('TYLOR AI is running');
+});
+
+// Start the Express server
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
 // Example function to create a new user
 async function signUp(email, password) {
