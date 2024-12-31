@@ -227,6 +227,7 @@
     </style>
     <script>
         const sessions = {}; // To store the session data
+        let userEmail = ''; // Global variable to store the user's email
 
         async function signUp(event) {
             event.preventDefault();
@@ -261,8 +262,12 @@
             const data = await response.json();
             alert(data.message);
             if (response.ok) {
+                userEmail = email; // Store the user's email
                 document.getElementById('auth-container').style.display = 'none';
                 document.querySelector('.chat-container').style.display = 'flex';
+
+                // Fetch previous sessions
+                await fetchSessions(userEmail);
             }
         }
 
@@ -283,13 +288,67 @@
                     body: JSON.stringify({ messages: sessions[sessionId] })
                 });
                 const data = await response.json();
-                
+
                 const botMessage = data.result || 'No response received';
                 sessions[sessionId].push({ role: 'assistant', content: botMessage });
                 appendMessage('bot', botMessage);
+
+                // Automatically store the session
+                await storeSession(sessionId, sessions[sessionId]);
             } catch (error) {
                 appendMessage('bot', 'Error: Unable to connect to the API');
                 console.error('API Error:', error);
+            }
+        }
+
+    async function sendMessage(event) {
+            event.preventDefault();
+            const message = document.getElementById('user-input').value;
+
+            if (message.trim() !== '') {
+                // Append user message to chat
+                appendMessage('user', message);
+
+                // Clear the input field
+                document.getElementById('user-input').value = '';
+
+                // Add user message to the session
+                if (!sessions[userEmail]) {
+                    sessions[userEmail] = [];
+                }
+                sessions[userEmail].push({ role: 'user', content: message });
+
+                // Fetch response from AI
+                await fetchAIResponse(userEmail);
+
+                // Automatically store the session
+                await storeSession(userEmail, sessions[userEmail]);
+            }
+        }
+
+        async function storeSession(email, messages) {
+            const response = await fetch('/store-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email, messages: messages })
+            });
+            const data = await response.json();
+            console.log(data.message); // Log the response from the backend
+        }
+
+        async function fetchSessions(email) {
+            const response = await fetch(`/get-session?email=${email}`);
+            const data = await response.json();
+            if (data.sessions.length > 0) {
+                const latestSession = data.sessions[0];
+                const sessionId = email;
+                sessions[sessionId] = latestSession.messages;
+                // Load the messages into the chat
+                latestSession.messages.forEach(message => {
+                    appendMessage(message.role === 'user' ? 'user' : 'bot', message.content);
+                });
             }
         }
 
@@ -300,29 +359,6 @@
             messageDiv.innerHTML = message;
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        async function sendMessage(event) {
-            event.preventDefault();
-            const message = document.getElementById('user-input').value;
-            if (message.trim() !== '') {
-                const sessionId = 'unique-session-id'; // Replace with a unique session ID for the user
-
-                // Append user message to chat
-                appendMessage('user', message);
-                
-                // Clear the input field
-                document.getElementById('user-input').value = ''; 
-
-                // Add user message to the session
-                if (!sessions[sessionId]) {
-                    sessions[sessionId] = [];
-                }
-                sessions[sessionId].push({ role: 'user', content: message });
-
-                // Fetch response from AI
-                await fetchAIResponse(sessionId);
-            }
         }
     </script>
 </head>
