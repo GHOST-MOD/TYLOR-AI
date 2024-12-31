@@ -21,6 +21,8 @@ document.getElementById('sign-up-btn').addEventListener('click', () => {
     const errorMessage = document.getElementById('error-message');
 
     loader.style.display = 'block';
+    errorMessage.textContent = '';
+
     auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             console.log('User signed up:', userCredential.user);
@@ -41,6 +43,8 @@ document.getElementById('sign-in-btn').addEventListener('click', () => {
     const errorMessage = document.getElementById('error-message');
 
     loader.style.display = 'block';
+    errorMessage.textContent = '';
+
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             console.log('User signed in:', userCredential.user);
