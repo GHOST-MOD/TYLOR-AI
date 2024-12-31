@@ -17,29 +17,41 @@ const db = firebase.firestore();
 document.getElementById('sign-up-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const loader = document.getElementById('loader');
+    const errorMessage = document.getElementById('error-message');
+
+    loader.style.display = 'block';
     auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             console.log('User signed up:', userCredential.user);
+            loader.style.display = 'none';
             document.getElementById('auth-container').style.display = 'none';
             document.querySelector('.chat-container').style.display = 'flex';
         })
         .catch((error) => {
-            console.error('Sign Up Error:', error.message);
+            loader.style.display = 'none';
+            errorMessage.textContent = error.message;
         });
 });
 
 document.getElementById('sign-in-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const loader = document.getElementById('loader');
+    const errorMessage = document.getElementById('error-message');
+
+    loader.style.display = 'block';
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             console.log('User signed in:', userCredential.user);
+            loader.style.display = 'none';
             document.getElementById('auth-container').style.display = 'none';
             document.querySelector('.chat-container').style.display = 'flex';
             loadUserMessages(userCredential.user.uid);
         })
         .catch((error) => {
-            console.error('Sign In Error:', error.message);
+            loader.style.display = 'none';
+            errorMessage.textContent = error.message;
         });
 });
 
