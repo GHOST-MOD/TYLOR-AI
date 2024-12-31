@@ -32,9 +32,14 @@ function appendMessage(sender, message) {
         <small style="margin-left: 10px; color: #ccc;">${timestamp}</small>
     `;
 
+    let messageContent1 = `
+        <div>${timestamp}</div>
+        <small style="margin-left: 10px; color: #ccc;">${message}</small>
+    `;
+
     // Format with avatar
     if (sender === 'user') {
-        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">  ${messageContent}`;
+        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">  ${messageContent1}`;
     } else {
         messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${messageContent}`;
     }
