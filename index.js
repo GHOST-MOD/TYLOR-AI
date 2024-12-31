@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const { initializeApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
-const { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } = require('firebase/firestore');
+const { getFirestore, collection, addDoc, getDocs, query, where, orderBy } = require('firebase/firestore');
 
 // Firebase configuration
 const firebaseConfig = {
@@ -65,6 +65,34 @@ server.post('/signin', async (req, res) => {
     }
 });
 
+// Route to store session data
+server.post('/store-session', async (req, res) => {
+    const { uid, sessionId, messages } = req.body;
+    try {
+        await addDoc(collection(db, 'sessions'), {
+            uid: uid,
+            sessionId: sessionId,
+            messages: messages,
+            timestamp: serverTimestamp()
+        });
+        res.status(200).json({ message: 'Session stored successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error storing session', error: error.message });
+    }
+});
+
+// Route to retrieve session data
+server.get('/get-session', async (req, res) => {
+    const { uid } = req.query;
+    try {
+        const q = query(collection(db, 'sessions'), where('uid', '==', uid), orderBy('timestamp', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const sessions = querySnapshot.docs.map(doc => doc.data());
+        res.status(200).json({ sessions: sessions });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving sessions', error: error.message });
+    }
+});
 
 // Start the Express server
 server.listen(PORT, () => {
