@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 const { initializeApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
 const { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } = require('firebase/firestore');
@@ -22,7 +23,11 @@ const db = getFirestore(app);
 
 // Create an Express application
 const server = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
+
+// Middleware to parse request bodies
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from the root directory
 server.use(express.static(path.join(__dirname)));
@@ -32,82 +37,35 @@ server.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Route to handle sign-up
+server.post('/signup', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        res.status(200).json({ message: 'User signed up', user: userCredential.user });
+    } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            console.error('Error during sign up: Email already in use. Attempting to sign in.');
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            res.status(200).json({ message: 'User signed in', user: userCredential.user });
+        } else {
+            res.status(400).json({ message: error.message });
+        }
+    }
+});
+
+// Route to handle sign-in
+server.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        res.status(200).json({ message: 'User signed in', user: userCredential.user });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // Start the Express server
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-// Example function to create a new user
-async function signUp(email, password) {
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log('User signed up:', userCredential.user);
-        return userCredential.user;
-    } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-            console.error('Error during sign up: Email already in use. Attempting to sign in.');
-            return await signIn(email, password);
-        } else {
-            console.error('Error during sign up:', error.message);
-        }
-    }
-}
-
-// Example function to sign in a user
-async function signIn(email, password) {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        console.log('User signed in:', userCredential.user);
-        return userCredential.user;
-    } catch (error) {
-        console.error('Error during sign in:', error.message);
-    }
-}
-
-// Example function to load user messages
-async function loadUserMessages(uid) {
-    const messagesQuery = query(
-        collection(db, 'messages'),
-        where('uid', '==', uid),
-        orderBy('timestamp', 'desc'),
-        limit(10)
-    );
-
-    try {
-        const querySnapshot = await getDocs(messagesQuery);
-        querySnapshot.forEach((doc) => {
-            const message = doc.data().message;
-            const sender = doc.data().sender;
-            console.log(`${sender}: ${message}`);
-        });
-    } catch (error) {
-        console.error('Error fetching messages:', error);
-    }
-}
-
-// Example function to save a message
-async function saveMessage(uid, message, sender) {
-    try {
-        await addDoc(collection(db, 'messages'), {
-            uid: uid,
-            message: message,
-            sender: sender,
-            timestamp: serverTimestamp()
-        });
-        console.log('Message saved');
-    } catch (error) {
-        console.error('Error saving message:', error);
-    }
-}
-
-// Example usage
-(async () => {
-    const email = 'user@example.com';
-    const password = 'superSecretPassword';
-    
-    const user = await signUp(email, password);
-    if (user) {
-        await saveMessage(user.uid, 'Hello, world!', 'user');
-        await loadUserMessages(user.uid);
-    }
-})();
