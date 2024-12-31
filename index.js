@@ -1,7 +1,7 @@
-// Require Firebase modules
-const firebase = require('firebase/app');
-require('firebase/auth');
-require('firebase/firestore');
+// Import Firebase modules
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } from 'firebase/firestore';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -15,9 +15,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 document.getElementById('sign-up-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
@@ -28,7 +28,7 @@ document.getElementById('sign-up-btn').addEventListener('click', () => {
     loader.style.display = 'block';
     errorMessage.textContent = '';
 
-    auth.createUserWithEmailAndPassword(email, password)
+    createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             console.log('User signed up:', userCredential.user);
             loader.style.display = 'none';
@@ -50,7 +50,7 @@ document.getElementById('sign-in-btn').addEventListener('click', () => {
     loader.style.display = 'block';
     errorMessage.textContent = '';
 
-    auth.signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             console.log('User signed in:', userCredential.user);
             loader.style.display = 'none';
@@ -65,13 +65,15 @@ document.getElementById('sign-in-btn').addEventListener('click', () => {
 });
 
 async function loadUserMessages(uid) {
-    const messagesQuery = db.collection('messages')
-        .where('uid', '==', uid)
-        .orderBy('timestamp', 'desc')
-        .limit(10);
+    const messagesQuery = query(
+        collection(db, 'messages'),
+        where('uid', '==', uid),
+        orderBy('timestamp', 'desc'),
+        limit(10)
+    );
 
     try {
-        const querySnapshot = await messagesQuery.get();
+        const querySnapshot = await getDocs(messagesQuery);
         querySnapshot.forEach((doc) => {
             const message = doc.data().message;
             const sender = doc.data().sender;
@@ -106,11 +108,11 @@ async function fetchAIResponse(sessionId, userId) {
 
 async function saveMessage(uid, message, sender) {
     try {
-        await db.collection('messages').add({
+        await addDoc(collection(db, 'messages'), {
             uid: uid,
             message: message,
             sender: sender,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            timestamp: serverTimestamp()
         });
         console.log('Message saved');
     } catch (error) {
