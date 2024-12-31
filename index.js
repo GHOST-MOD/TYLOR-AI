@@ -1,3 +1,8 @@
+// Require Firebase modules
+const firebase = require('firebase/app');
+require('firebase/auth');
+require('firebase/firestore');
+
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCA0bpWeFyZjLK2p2GjhnTrFI9ONdbQGOo",
@@ -59,18 +64,22 @@ document.getElementById('sign-in-btn').addEventListener('click', () => {
         });
 });
 
-function loadUserMessages(uid) {
-    db.collection('messages').where('uid', '==', uid).orderBy('timestamp', 'desc').limit(10).get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const message = doc.data().message;
-                const sender = doc.data().sender;
-                appendMessage(sender, message);
-            });
-        })
-        .catch((error) => {
-            console.error('Error fetching messages:', error);
+async function loadUserMessages(uid) {
+    const messagesQuery = db.collection('messages')
+        .where('uid', '==', uid)
+        .orderBy('timestamp', 'desc')
+        .limit(10);
+
+    try {
+        const querySnapshot = await messagesQuery.get();
+        querySnapshot.forEach((doc) => {
+            const message = doc.data().message;
+            const sender = doc.data().sender;
+            appendMessage(sender, message);
         });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
 }
 
 async function fetchAIResponse(sessionId, userId) {
@@ -95,19 +104,18 @@ async function fetchAIResponse(sessionId, userId) {
     }
 }
 
-function saveMessage(uid, message, sender) {
-    db.collection('messages').add({
-        uid: uid,
-        message: message,
-        sender: sender,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
+async function saveMessage(uid, message, sender) {
+    try {
+        await db.collection('messages').add({
+            uid: uid,
+            message: message,
+            sender: sender,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
         console.log('Message saved');
-    })
-    .catch((error) => {
+    } catch (error) {
         console.error('Error saving message:', error);
-    });
+    }
 }
 
 function appendMessage(sender, message) {
