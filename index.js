@@ -1,36 +1,98 @@
-const sessions = {}; // Store all sessions here
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCA0bpWeFyZjLK2p2GjhnTrFI9ONdbQGOo",
+    authDomain: "tylor-ai.firebaseapp.com",
+    projectId: "tylor-ai",
+    storageBucket: "tylor-ai.firebasestorage.app",
+    messagingSenderId: "321080155380",
+    appId: "1:321080155380:web:fbd697da3fd8e9f1ea52a1",
+    measurementId: "G-BG7JLWNE9Z"
+};
 
-function generateSessionId() {
-    return '_' + Math.random().toString(36).substr(2, 9); // Simple session ID generator
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+document.getElementById('sign-up-btn').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            console.log('User signed up:', userCredential.user);
+            document.getElementById('auth-container').style.display = 'none';
+            document.querySelector('.chat-container').style.display = 'flex';
+        })
+        .catch((error) => {
+            console.error('Sign Up Error:', error.message);
+        });
+});
+
+document.getElementById('sign-in-btn').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            console.log('User signed in:', userCredential.user);
+            document.getElementById('auth-container').style.display = 'none';
+            document.querySelector('.chat-container').style.display = 'flex';
+            loadUserMessages(userCredential.user.uid);
+        })
+        .catch((error) => {
+            console.error('Sign In Error:', error.message);
+        });
+});
+
+function loadUserMessages(uid) {
+    db.collection('messages').where('uid', '==', uid).orderBy('timestamp', 'desc').limit(10).get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const message = doc.data().message;
+                const sender = doc.data().sender;
+                appendMessage(sender, message);
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching messages:', error);
+        });
 }
 
-document.getElementById('start-chat-btn').addEventListener('click', () => {
-    const sessionId = generateSessionId();
-    sessions[sessionId] = [];
-    
-    document.getElementById('start-chat-btn').style.display = 'none';
-    document.getElementById('user-input-container').style.display = 'flex';
-    document.getElementById('user-input').focus();
-    
-    // Store sessionId in a way you can access later, e.g., local storage
-    localStorage.setItem('sessionId', sessionId);
-});
+async function fetchAIResponse(sessionId, userId) {
+    try {
+        const response = await fetch('https://api.tioo.eu.org/post/gpt-prompt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ messages: sessions[sessionId].slice(-10) })
+        });
+        const data = await response.json();
+        
+        const botMessage = data.result || 'No response received';
+        sessions[sessionId].push({ role: 'assistant', content: botMessage });
+        appendMessage('bot', botMessage);
+        saveMessage(userId, botMessage, 'assistant');
+    } catch (error) {
+        appendMessage('bot', 'Error: Unable to connect to the API');
+        console.error('API Error:', error);
+    }
+}
 
-document.getElementById('send-btn').addEventListener('click', async () => {
-    const userInput = document.getElementById('user-input').value;
-    if (!userInput.trim()) return;
-
-    const sessionId = localStorage.getItem('sessionId');
-    if (!sessionId) return alert("Session ID not found!");
-
-    appendMessage('user', userInput);
-
-    document.getElementById('user-input').value = '';
-    document.getElementById('user-input').style.height = 'auto';
-
-    sessions[sessionId].push({ role: 'user', content: userInput });
-    await fetchAIResponse(sessionId);
-});
+function saveMessage(uid, message, sender) {
+    db.collection('messages').add({
+        uid: uid,
+        message: message,
+        sender: sender,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        console.log('Message saved');
+    })
+    .catch((error) => {
+        console.error('Error saving message:', error);
+    });
+}
 
 function appendMessage(sender, message) {
     const chatBox = document.getElementById('chat-box');
@@ -60,27 +122,6 @@ function appendMessage(sender, message) {
 
     chatBox.appendChild(messageElement);
     chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-async function fetchAIResponse(sessionId) {
-    try {
-        const response = await fetch('https://api.tioo.eu.org/post/gpt-prompt', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'accept': 'application/json'
-            },
-            body: JSON.stringify({ messages: sessions[sessionId] })
-        });
-        const data = await response.json();
-        
-        const botMessage = data.result || 'No response received';
-        sessions[sessionId].push({ role: 'assistant', content: botMessage });
-        appendMessage('bot', botMessage);
-    } catch (error) {
-        appendMessage('bot', 'Error: Unable to connect to the API');
-        console.error('API Error:', error);
-    }
 }
 
 document.getElementById('user-input').addEventListener('keydown', function(e) {
