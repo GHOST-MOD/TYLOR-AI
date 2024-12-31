@@ -1,5 +1,11 @@
 let conversation = [];
 
+document.getElementById('start-chat-btn').addEventListener('click', () => {
+    document.getElementById('start-chat-btn').style.display = 'none';
+    document.getElementById('user-input-container').style.display = 'flex';
+    document.getElementById('user-input').focus();
+});
+
 document.getElementById('send-btn').addEventListener('click', async () => {
     const userInput = document.getElementById('user-input').value;
     if (!userInput.trim()) return;
