@@ -42,7 +42,7 @@ async function fetchAIResponse() {
         });
         const data = await response.json();
         
-        const botMessage = data.result || 'No response received';
+        const botMessage = data.result ? JSON.stringify(data.result, null, 2) : 'No response received';
         conversation.push({ role: 'assistant', content: botMessage });
         appendMessage('bot', botMessage);
     } catch (error) {
@@ -63,4 +63,4 @@ document.getElementById('user-input').addEventListener('keydown', function(e) {
 function autoResizeInput(element) {
     element.style.height = 'auto';
     element.style.height = (element.scrollHeight) + 'px';
-} 
+}
