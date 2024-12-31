@@ -1,7 +1,6 @@
-// Import Firebase modules
-import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } from 'firebase/firestore';
+const { initializeApp } = require('firebase/app');
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
+const { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } = require('firebase/firestore');
 
 // Firebase configuration
 const firebaseConfig = {
@@ -19,51 +18,29 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-document.getElementById('sign-up-btn').addEventListener('click', () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const loader = document.getElementById('loader');
-    const errorMessage = document.getElementById('error-message');
+// Example function to create a new user
+async function signUp(email, password) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User signed up:', userCredential.user);
+        return userCredential.user;
+    } catch (error) {
+        console.error('Error during sign up:', error.message);
+    }
+}
 
-    loader.style.display = 'block';
-    errorMessage.textContent = '';
+// Example function to sign in a user
+async function signIn(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('User signed in:', userCredential.user);
+        return userCredential.user;
+    } catch (error) {
+        console.error('Error during sign in:', error.message);
+    }
+}
 
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            console.log('User signed up:', userCredential.user);
-            loader.style.display = 'none';
-            document.getElementById('auth-container').style.display = 'none';
-            document.querySelector('.chat-container').style.display = 'flex';
-        })
-        .catch((error) => {
-            loader.style.display = 'none';
-            errorMessage.textContent = error.message;
-        });
-});
-
-document.getElementById('sign-in-btn').addEventListener('click', () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const loader = document.getElementById('loader');
-    const errorMessage = document.getElementById('error-message');
-
-    loader.style.display = 'block';
-    errorMessage.textContent = '';
-
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            console.log('User signed in:', userCredential.user);
-            loader.style.display = 'none';
-            document.getElementById('auth-container').style.display = 'none';
-            document.querySelector('.chat-container').style.display = 'flex';
-            loadUserMessages(userCredential.user.uid);
-        })
-        .catch((error) => {
-            loader.style.display = 'none';
-            errorMessage.textContent = error.message;
-        });
-});
-
+// Example function to load user messages
 async function loadUserMessages(uid) {
     const messagesQuery = query(
         collection(db, 'messages'),
@@ -77,35 +54,14 @@ async function loadUserMessages(uid) {
         querySnapshot.forEach((doc) => {
             const message = doc.data().message;
             const sender = doc.data().sender;
-            appendMessage(sender, message);
+            console.log(`${sender}: ${message}`);
         });
     } catch (error) {
         console.error('Error fetching messages:', error);
     }
 }
 
-async function fetchAIResponse(sessionId, userId) {
-    try {
-        const response = await fetch('https://api.tioo.eu.org/post/gpt-prompt', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'accept': 'application/json'
-            },
-            body: JSON.stringify({ messages: sessions[sessionId].slice(-10) })
-        });
-        const data = await response.json();
-        
-        const botMessage = data.result || 'No response received';
-        sessions[sessionId].push({ role: 'assistant', content: botMessage });
-        appendMessage('bot', botMessage);
-        saveMessage(userId, botMessage, 'assistant');
-    } catch (error) {
-        appendMessage('bot', 'Error: Unable to connect to the API');
-        console.error('API Error:', error);
-    }
-}
-
+// Example function to save a message
 async function saveMessage(uid, message, sender) {
     try {
         await addDoc(collection(db, 'messages'), {
@@ -120,46 +76,14 @@ async function saveMessage(uid, message, sender) {
     }
 }
 
-function appendMessage(sender, message) {
-    const chatBox = document.getElementById('chat-box');
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
-    messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+// Example usage
+(async () => {
+    const email = 'user@example.com';
+    const password = 'superSecretPassword';
     
-    // Add avatar, message, and timestamp
-    let messageContent = `
-        <div>${message}</div>
-        <small style="margin-left: 10px; color: #ccc;">${timestamp}</small>
-    `;
-
-    let messageContent1 = `
-        <small style="margin-left: 10px; color: #ccc;">${timestamp}</small>
-        <div>${message}</div>
-    `;
-
-    // Format with avatar
-    if (sender === 'user') {
-        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">  ${messageContent1}`;
-    } else {
-        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${messageContent}`;
+    const newUser = await signUp(email, password);
+    if (newUser) {
+        await saveMessage(newUser.uid, 'Hello, world!', 'user');
+        await loadUserMessages(newUser.uid);
     }
-
-    chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-document.getElementById('user-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        document.getElementById('send-btn').click();
-    } else {
-        autoResizeInput(this);
-    }
-});
-
-function autoResizeInput(element) {
-    element.style.height = 'auto';
-    element.style.height = (element.scrollHeight) + 'px';
-}
+})();
