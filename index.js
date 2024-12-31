@@ -34,7 +34,7 @@ function appendMessage(sender, message) {
 
     // Format with avatar
     if (sender === 'user') {
-        messageElement.innerHTML = `${messageContent} <img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">`;
+        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">  ${messageContent}`;
     } else {
         messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${messageContent}`;
     }
