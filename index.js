@@ -32,7 +32,7 @@ function appendMessage(sender, message) {
 
 async function fetchAIResponse() {
     try {
-        const response = await fetch('https://btch.us.kg/post/v2/gpt-prompt', {
+        const response = await fetch('https://api.tioo.eu.org/post/gpt-prompt', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ async function fetchAIResponse() {
         });
         const data = await response.json();
         
-        const botMessage = data.result ? JSON.stringify(data.result, null, 2) : 'No response received';
+        const botMessage = data.result || 'No response received';
         conversation.push({ role: 'assistant', content: botMessage });
         appendMessage('bot', botMessage);
     } catch (error) {
