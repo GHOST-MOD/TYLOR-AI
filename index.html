@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TYLOR AI</title>
     <style>
         body {
@@ -169,9 +169,19 @@
             background-color: #007b5f;
         }
     </style>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 </head>
 <body>
-    <div class="chat-container">
+    <div id="auth-container">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="sign-up-btn">Sign Up</button>
+        <button id="sign-in-btn">Sign In</button>
+    </div>
+    <div class="chat-container" style="display:none;">
         <div class="chat-header">
             <img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Logo">
             <h1>TYLOR AI</h1>
@@ -187,7 +197,6 @@
             </button>
         </div>
     </div>
-
     <script src="index.js"></script>
 </body>
 </html>
