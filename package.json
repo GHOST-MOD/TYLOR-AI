@@ -1,0 +1,14 @@
+{
+  "name": "tylor-ai",
+  "version": "1.0.0",
+  "description": "A chat application using Firebase for authentication and Firestore for storing messages.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^11.1.0"
+  }
+} 
