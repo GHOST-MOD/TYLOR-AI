@@ -23,19 +23,13 @@ function appendMessage(sender, message) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-    
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    messageElement.innerHTML = `
-        <div>${message}</div>
-        <small style="margin-left: 10px; color: #ccc;">${timestamp}</small>
-    `;
 
-    // Add avatar images
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
     if (sender === 'user') {
-        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User">${messageElement.innerHTML}`;
+        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/ffffff/user.png" alt="User"><div>${message}</div><small style="margin-left: 10px; color: #ccc;">${timestamp}</small>`;
     } else {
-        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot">${messageElement.innerHTML}`;
+        messageElement.innerHTML = `<img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot"><div>${message}</div><small style="margin-left: 10px; color: #ccc;">${timestamp}</small>`;
     }
 
     chatBox.appendChild(messageElement);
