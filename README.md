@@ -1,6 +1,6 @@
 # TYLOR AI Web Chat Application
 
-# https://tylor-ai.vercel.app/ 
+# tylor-ai.vercel.app
 
 ## Overview
 TYLOR AI is a conversational AI web application that allows users to interact with an AI bot, with session management.
@@ -31,4 +31,4 @@ This project is licensed under the MIT License.
 
 ## Acknowledgements
 - Icons from [Icons8](https://icons8.com/)
-- AI API provided by [Tioo](https://api.tioo.eu.org/)
+- AI API provided by Tioo
