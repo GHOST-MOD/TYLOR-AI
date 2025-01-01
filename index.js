@@ -1,100 +1,193 @@
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const { initializeApp } = require('firebase/app');
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
-const { getFirestore, collection, addDoc, getDocs, query, where, orderBy } = require('firebase/firestore');
-
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCA0bpWeFyZjLK2p2GjhnTrFI9ONdbQGOo",
-    authDomain: "tylor-ai.firebaseapp.com",
-    projectId: "tylor-ai",
-    storageBucket: "tylor-ai.firebasestorage.app",
-    messagingSenderId: "321080155380",
-    appId: "1:321080155380:web:fbd697da3fd8e9f1ea52a1",
-    measurementId: "G-BG7JLWNE9Z"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Create an Express application
-const server = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware to parse request bodies
-server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve static files from the root directory
-server.use(express.static(path.join(__dirname)));
-
-// Route to serve the HTML file
-server.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Route to handle sign-up
-server.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        res.status(200).json({ message: 'User signed up', user: userCredential.user });
-    } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-            console.error('Error during sign up: Email already in use. Attempting to sign in.');
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            res.status(200).json({ message: 'User signed in', user: userCredential.user });
-        } else {
-            res.status(400).json({ message: error.message });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1">
+    <title>TYLOR AI</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f7f7f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: url('https://i.ibb.co/bFWtkv0/1734465645315.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
-    }
-});
 
-// Route to handle sign-in
-server.post('/signin', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        res.status(200).json({ message: 'User signed in', user: userCredential.user });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+        .chat-container {
+            width: 100%;
+            height: 100vh; /* Full screen height */
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-// Route to store session data
-server.post('/store-session', async (req, res) => {
-    const { uid, sessionId, messages } = req.body;
-    try {
-        await addDoc(collection(db, 'sessions'), {
-            uid: uid,
-            sessionId: sessionId,
-            messages: messages,
-            timestamp: serverTimestamp()
-        });
-        res.status(200).json({ message: 'Session stored successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error storing session', error: error.message });
-    }
-});
+        .chat-header {
+            background-color: rgba(51, 51, 51, 0.7);
+            padding: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
 
-// Route to retrieve session data
-server.get('/get-session', async (req, res) => {
-    const { uid } = req.query;
-    try {
-        const q = query(collection(db, 'sessions'), where('uid', '==', uid), orderBy('timestamp', 'desc'));
-        const querySnapshot = await getDocs(q);
-        const sessions = querySnapshot.docs.map(doc => doc.data());
-        res.status(200).json({ sessions: sessions });
-    } catch (error) {
-        res.status(500).json({ message: 'Error retrieving sessions', error: error.message });
-    }
-});
+        .chat-header img {
+            height: 30px;
+            margin-right: 10px;
+        }
 
-// Start the Express server
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+        .chat-header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            max-width: 75%;
+            line-height: 1.5;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message.user-message {
+            align-self: flex-end;
+            background-color: rgba(0, 166, 126, 0.8);
+            color: white;
+            flex-direction: row-reverse;
+        }
+
+        .message.bot-message {
+            align-self: flex-start;
+            background-color: rgba(51, 51, 51, 0.7);
+            color: white;
+        }
+
+        .message img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .input-container {
+            display: none; /* Hide the input container initially */
+            padding: 15px;
+            background-color: transparent;
+            border-top: 1px solid rgba(51, 51, 51, 0.7); /* Semi-transparent border */
+            align-items: center;
+        }
+
+        #user-input {
+            width: 80%;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            background-color: rgba(68, 68, 68, 0.7);
+            font-size: 14px;
+            color: white;
+            resize: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #user-input:focus {
+            outline: none;
+        }
+
+        #send-btn {
+            background-color: #00a67e;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #send-btn:hover {
+            background-color: #007b5f;
+        }
+
+        #send-btn svg {
+            fill: white;
+            width: 24px;
+            height: 24px;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
+        }
+
+        .start-chat-btn {
+            position: absolute; /* Center the button */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: rgba(0, 166, 126, 0.8);
+            border-radius: 20px;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-chat-btn:hover {
+            background-color: #007b5f;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Logo">
+            <h1>TYLOR AI</h1>
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="start-chat-btn" id="start-chat-btn">Tap to start chatting</div>
+        <div class="input-container" id="user-input-container">
+            <textarea id="user-input" placeholder="Ask a question..." rows="1"></textarea>
+            <button id="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
