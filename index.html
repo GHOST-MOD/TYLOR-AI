@@ -2,107 +2,115 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1">
     <title>TYLOR AI</title>
     <style>
-        /* General Styling */
         body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #00a67e, #007b5f);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f7f7f8;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #fff;
-            overflow: hidden;
+            margin: 0;
+            background: url('https://i.ibb.co/bFWtkv0/1734465645315.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
 
         .chat-container {
-            width: 360px;
+            width: 95%;
+            max-width: 600px;
             height: 90vh;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* Header */
         .chat-header {
-            background: linear-gradient(135deg, #00a67e, #007b5f);
-            padding: 20px;
-            text-align: center;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-        }
-
-        .chat-header img {
-            height: 30px;
-            margin-bottom: 5px;
+            background-color: rgba(51, 51, 51, 0.9);
+            padding: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
 
         .chat-header h1 {
             margin: 0;
             font-size: 18px;
+            display: flex;
+            align-items: center;
         }
 
-        /* Chat Messages */
+        .chat-header h1 span {
+            margin-left: 10px;
+            font-size: 12px;
+            color: #00a67e;
+        }
+
+        .chat-header img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
         .chat-box {
             flex-grow: 1;
-            padding: 20px;
             overflow-y: auto;
-            background: rgba(255, 255, 255, 0.05);
-            scrollbar-width: thin;
-        }
-
-        .chat-box::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-box::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 5px;
+            padding: 20px;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
         }
 
         .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 10px;
             max-width: 75%;
-            margin-bottom: 12px;
-            padding: 12px 15px;
-            border-radius: 15px;
+            line-height: 1.5;
             font-size: 14px;
-            line-height: 1.4;
         }
 
-        .bot-message {
-            background: rgba(51, 51, 51, 0.8);
-            color: #fff;
-            align-self: flex-start;
-        }
-
-        .user-message {
-            background: #00a67e;
-            color: #fff;
+        .message.user-message {
             align-self: flex-end;
+            background-color: rgba(0, 166, 126, 0.8);
+            color: white;
         }
 
-        /* Input Container */
+        .message.bot-message {
+            align-self: flex-start;
+            background-color: rgba(51, 51, 51, 0.7);
+            color: white;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            font-size: 12px;
+            color: #00a67e;
+            margin-bottom: 10px;
+        }
+
         .input-container {
             display: flex;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
+            background-color: rgba(51, 51, 51, 0.9);
             align-items: center;
         }
 
         #user-input {
             flex-grow: 1;
             border: none;
+            padding: 10px;
             border-radius: 20px;
-            padding: 12px 15px;
+            background-color: rgba(68, 68, 68, 0.7);
             font-size: 14px;
-            color: #fff;
-            background: rgba(68, 68, 68, 0.8);
+            color: white;
+            resize: none;
         }
 
         #user-input:focus {
@@ -110,103 +118,83 @@
         }
 
         #send-btn {
-            margin-left: 10px;
-            background: #00a67e;
-            color: #fff;
+            background-color: #00a67e;
+            color: white;
             border: none;
-            padding: 12px;
-            border-radius: 50%;
+            padding: 10px;
             cursor: pointer;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s ease;
-        }
-
-        #send-btn:hover {
-            background: #007b5f;
+            margin-left: 10px;
         }
 
         #send-btn svg {
-            fill: #fff;
+            fill: white;
             width: 20px;
             height: 20px;
         }
 
-        /* Start Chat Button */
-        .start-chat-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            background: #00a67e;
-            color: #fff;
-            border: none;
-            font-size: 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.3s ease;
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .start-chat-btn:hover {
-            background: #007b5f;
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <!-- Header -->
         <div class="chat-header">
-            <img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Bot Logo">
-            <h1>TYLOR AI</h1>
+            <h1>
+                <img src="https://img.icons8.com/ios-glyphs/90/00a67e/bot.png" alt="Logo">
+                TYLOR AI <span id="status">Online</span>
+            </h1>
         </div>
-
-        <!-- Chat Messages -->
         <div class="chat-box" id="chat-box"></div>
-
-        <!-- Start Chat Button -->
-        <button class="start-chat-btn" id="start-chat-btn">Start Chatting</button>
-
-        <!-- Input Section -->
-        <div class="input-container" id="user-input-container" style="display: none;">
-            <textarea id="user-input" placeholder="Type your message..."></textarea>
+        <div class="input-container">
+            <textarea id="user-input" placeholder="Ask a question..." rows="1"></textarea>
             <button id="send-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M2 21l21-9L2 3v7l15 2-15 2z" />
+                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
                 </svg>
             </button>
         </div>
     </div>
 
     <script>
-        const startChatBtn = document.getElementById("start-chat-btn");
-        const userInputContainer = document.getElementById("user-input-container");
         const chatBox = document.getElementById("chat-box");
-        const sendBtn = document.getElementById("send-btn");
         const userInput = document.getElementById("user-input");
-
-        startChatBtn.addEventListener("click", () => {
-            startChatBtn.style.display = "none";
-            userInputContainer.style.display = "flex";
-        });
+        const sendBtn = document.getElementById("send-btn");
 
         sendBtn.addEventListener("click", () => {
             const userMessage = userInput.value.trim();
-            if (userMessage) {
-                addMessage(userMessage, "user-message");
-                userInput.value = "";
+            if (!userMessage) return;
 
-                setTimeout(() => {
-                    addMessage("This is a sample bot response.", "bot-message");
-                }, 1000);
-            }
+            appendMessage("user-message", userMessage);
+            userInput.value = "";
+
+            // Simulate typing indicator
+            const typingIndicator = document.createElement("div");
+            typingIndicator.className = "typing-indicator";
+            typingIndicator.innerText = "Tylor AI is typing...";
+            chatBox.appendChild(typingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Simulate API response
+            setTimeout(() => {
+                chatBox.removeChild(typingIndicator);
+                appendMessage("bot-message", "This is a response from TYLOR AI.");
+            }, 2000);
         });
 
-        function addMessage(text, className) {
+        function appendMessage(className, text) {
             const message = document.createElement("div");
             message.className = `message ${className}`;
-            message.textContent = text;
+            message.innerText = text;
             chatBox.appendChild(message);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
