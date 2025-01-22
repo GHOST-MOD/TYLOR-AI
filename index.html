@@ -184,11 +184,8 @@
             chatBox.appendChild(typingIndicator);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Simulate API response
-            setTimeout(() => {
-                chatBox.removeChild(typingIndicator);
-                appendMessage("bot-message", "This is TYLOR AI.");
-            }, 20000);
+            // Fetch AI response from the API
+            fetchAIResponse(userMessage, typingIndicator);
         });
 
         function appendMessage(className, text) {
@@ -197,6 +194,43 @@
             message.innerText = text;
             chatBox.appendChild(message);
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function fetchAIResponse(userMessage, typingIndicator) {
+            try {
+                const prompt = 'you are a friendly ai';
+                const url = `https://api.siputzx.my.id/api/ai/llama33?prompt=${encodeURIComponent(prompt)}&text=${encodeURIComponent(userMessage)}`;
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                
+                const botMessage = data.data || 'No response received';
+                chatBox.removeChild(typingIndicator);
+                appendMessage("bot-message", botMessage);
+            } catch (error) {
+                chatBox.removeChild(typingIndicator);
+                appendMessage("bot-message", 'Error: Unable to connect to the API');
+                console.error('API Error:', error);
+            }
+        }
+
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendBtn.click();
+            } else {
+                autoResizeInput(this);
+            }
+        });
+
+        function autoResizeInput(element) {
+            element.style.height = 'auto';
+            element.style.height = (element.scrollHeight) + 'px';
         }
     </script>
 </body>
