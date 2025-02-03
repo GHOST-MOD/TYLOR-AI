@@ -79,7 +79,7 @@ async function fetchAIResponse(sessionId, userInput) {
         sessions[sessionId].push({ role: 'assistant', content: botMessage });
         appendMessage('bot', botMessage);
     } catch (error) {
-        appendMessage('bot', 'Error: Unable to connect to the API');
+        appendMessage('bot', 'Error: Unable to connect to the API(කනගාටුයි මට එම කේතය CYBER GHOST ලබා දී නොමැත)');
         console.error('API Error:', error);
     }
 }
